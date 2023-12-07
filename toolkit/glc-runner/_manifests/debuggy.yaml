@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: debuggy
+  namespace: {NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: debuggy
+  template:
+    metadata:
+      labels:
+        app: debuggy
+    spec:
+      containers:
+        - name: debuggy
+          image: 038340027651.dkr.ecr.us-east-1.amazonaws.com/graylog-argo-workflow-operator:latest
+          command: ["/bin/sleep", "infinity"]
