@@ -1,4 +1,4 @@
-name: Ansible linting
+name: Python Flake8 Linting
 
 on: [push, pull_request]
 

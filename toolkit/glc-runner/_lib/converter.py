@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 
+
 class JsonConverter:
 
     def __init__(self) -> None:
