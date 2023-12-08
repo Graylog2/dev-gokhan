@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import subprocess
 
+
 class Cmd:
 
     def __init__(self) -> None:
