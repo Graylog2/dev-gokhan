@@ -14,7 +14,7 @@ tenant_ns_list = k8s.get_namespaces(filter="^tenant-.*")
 
 for namespace in tenant_ns_list:
     graylog_pod = Pod(namespace, "graylog-application-0")
-    if(os_conn_str := graylog_pod.get_env("GRAYLOG_ELASTICSEARCH_HOSTS")):
+    if (os_conn_str := graylog_pod.get_env("GRAYLOG_ELASTICSEARCH_HOSTS")):
         debuggy = Debuggy(namespace)
         debuggy.deploy()
         debuggy_pod = Pod(namespace, debuggy.get_name())
@@ -35,5 +35,3 @@ for namespace in tenant_ns_list:
             debuggy.destroy()
         else:
             print(response)
-
-

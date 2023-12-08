@@ -1,11 +1,14 @@
 repos:
-- repo: https://github.com/ansible-community/ansible-lint.git
-  rev: v5.3.2  # Get the latest from https://github.com/ansible-community/ansible-lint/releases/
-  hooks:
-    - id: ansible-lint
-      files: \.(yaml|yml)$
-
-- repo: https://github.com/antonbabenko/pre-commit-terraform
-  rev: v1.62.3 # Get the latest from: https://github.com/antonbabenko/pre-commit-terraform/releases
-  hooks:
-    - id: terraform_fmt
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.1.0
+    hooks:
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+    -   id: check-yaml
+    -   id: check-json
+    -   id: end-of-file-fixer
+    -   id: mixed-line-ending
+# -   repo: https://github.com/pycqa/flake8
+#     rev: 6.1.0
+#     hooks:
+#     -   id: flake8

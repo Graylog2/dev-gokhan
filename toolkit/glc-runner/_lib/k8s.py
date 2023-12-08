@@ -2,8 +2,6 @@
 
 import re
 
-from time import sleep
-
 from _lib.cmd import Cmd
 from _lib.converter import JsonConverter
 
@@ -57,7 +55,7 @@ class Debuggy:
                 "--timeout=300s",
                 "-n",
                 f"{self.__ns}",
-                f"deployment/debuggy",
+                "deployment/debuggy",
             ]
             self.__cmd.run(cmd_str)
 
@@ -74,6 +72,7 @@ class Debuggy:
                 "-"
             ]
             self.__cmd.run(cmd_str, input=debuggy_manifest.encode("UTF-8"))
+
 
 class K8S:
 
@@ -95,12 +94,13 @@ class K8S:
             raw_namespaces = response["stdout"]
             if (namespaces_json := self.__json.decode(raw_namespaces)):
                 for item in namespaces_json["items"]:
-                    if filter == None:
+                    if filter is None:
                         namespace_list.append(item["metadata"]["name"])
                         continue
                     if re.search(f"{filter}", item["metadata"]["name"]):
                         namespace_list.append(item["metadata"]["name"])
         return namespace_list
+
 
 class Pod:
 
@@ -134,7 +134,7 @@ class Pod:
         cmd_prefix = [
             "kubectl",
             "exec",
-             "--tty",
+            "--tty",
             "--stdin",
             "-n",
             f"{self.__ns}",
@@ -153,6 +153,3 @@ class Pod:
         except:
             pass
         return response
-
-
-
