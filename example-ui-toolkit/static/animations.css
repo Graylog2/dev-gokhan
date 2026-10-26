@@ -1,0 +1,54 @@
+/* --- drawer ----------------------------------------------------------------- */
+/* Opening: the backdrop fades in and the panel slides in from the right.
+   Closing: htmx waits 200ms before emptying #drawer (hx-swap in drawer.html) and adds
+   .htmx-swapping to #drawer meanwhile, so the same animations run in reverse.
+   The locked-drawer modal (drawer_missing.html) only fades in. */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+#drawer dialog {
+  animation: fade-in 200ms ease-out;
+}
+#drawer dialog.drawer > article {
+  animation: slide-in 200ms ease-out;
+}
+
+#drawer.htmx-swapping dialog {
+  animation: fade-in 200ms ease-in reverse both;
+}
+#drawer.htmx-swapping dialog.drawer > article {
+  animation: slide-in 200ms ease-in reverse both;
+}
+
+/* --- table ------------------------------------------------------------------ */
+/* Rows fade in one after another. index.html sets --i to each row's position. Rows
+   past the 20th share the last delay, so a long list does not keep the page waiting. */
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+#table tbody tr {
+  animation: row-in 250ms ease-out backwards;
+  animation-delay: calc(min(var(--i, 0), 20) * 20ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #table tbody tr,
+  #drawer dialog,
+  #drawer dialog.drawer > article {
+    animation: none;
+  }
+}
