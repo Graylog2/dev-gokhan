@@ -1,0 +1,115 @@
+/* --- type scale ---------------------------------------------------------------- */
+/* Pico grows the root size with the viewport up to 131.25% (21px), and nearly all of
+   its spacing is in rem, so the whole UI swells on wide screens. Keep it 14-16px.
+   Loaded after Pico, so these win over its own breakpoint rules. */
+
+:root { --pico-font-size: 87.5%; }
+@media (min-width: 1024px) {
+  :root { --pico-font-size: 93.75%; }
+}
+@media (min-width: 1280px) {
+  :root { --pico-font-size: 100%; }
+}
+
+/* Below Pico's md breakpoint the tenant table turns into one card per row.
+   Each cell shows its column name from data-label. */
+@media (max-width: 767px) {
+  #table table,
+  #table tbody,
+  #table tr,
+  #table td {
+    display: block;
+  }
+
+  /* Keep the sort links, laid out as a wrapping row instead of table headers. */
+  #table thead tr {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--pico-spacing);
+  }
+
+  #table thead th {
+    border: none;
+    padding: 0;
+  }
+
+  #table tbody tr {
+    margin-bottom: var(--pico-spacing);
+    border: var(--pico-border-width) solid var(--pico-muted-border-color);
+    border-radius: var(--pico-border-radius);
+  }
+
+  #table tbody td {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--pico-spacing);
+    text-align: right;
+  }
+
+  #table tbody td[data-label]::before {
+    content: attr(data-label);
+    font-weight: 600;
+    text-align: left;
+  }
+}
+
+/* --- tokens ----------------------------------------------------------------- */
+/* Pico has no status colours, so badges get their own. Dark values follow Pico's
+   theme rules: the OS setting, unless data-theme pins one. */
+
+:root {
+  --good: #12805c;  --good-bg: #e3f6ee;
+  --warn: #9a6200;  --warn-bg: #fff2d6;
+  --bad:  #c4302b;  --bad-bg:  #fde7e6;
+  --neutral: #4b5363; --neutral-bg: #eceef3;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --good: #4ad6a1;  --good-bg: rgb(74 214 161 / .12);
+    --warn: #f2b44c;  --warn-bg: rgb(242 180 76 / .12);
+    --bad:  #ff7a73;  --bad-bg:  rgb(255 122 115 / .12);
+    --neutral: #b4bbcb; --neutral-bg: rgb(180 187 203 / .1);
+  }
+}
+
+[data-theme="dark"] {
+  --good: #4ad6a1;  --good-bg: rgb(74 214 161 / .12);
+  --warn: #f2b44c;  --warn-bg: rgb(242 180 76 / .12);
+  --bad:  #ff7a73;  --bad-bg:  rgb(255 122 115 / .12);
+  --neutral: #b4bbcb; --neutral-bg: rgb(180 187 203 / .1);
+}
+
+/* --- badges ----------------------------------------------------------------- */
+
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 9px; border-radius: 999px; font-size: .75rem; font-weight: 500; white-space: nowrap;
+  color: var(--neutral); background: var(--neutral-bg);
+}
+.badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.badge-good { color: var(--good); background: var(--good-bg); }
+.badge-warn { color: var(--warn); background: var(--warn-bg); }
+.badge-bad  { color: var(--bad);  background: var(--bad-bg); }
+
+/* --- table ------------------------------------------------------------------ */
+
+#table tbody tr { cursor: pointer; }
+
+/* --- drawer ----------------------------------------------------------------- */
+/* Pico's centred modal turned into a full-height panel on the right. */
+
+#drawer dialog.drawer { justify-content: flex-end; align-items: stretch; }
+#drawer dialog.drawer > article {
+  width: min(520px, 100vw); max-width: none; height: 100vh; max-height: 100vh;
+  margin: 0; border-radius: 0;
+}
+
+/* Keep the title and close button visible while the panel scrolls. */
+#drawer dialog.drawer > article > header {
+  position: sticky; z-index: 1;
+  top: calc(var(--pico-block-spacing-vertical) * -1);
+}
+
+/* Values can be multi-line JSON or long hostnames. */
+#drawer td { white-space: pre-wrap; overflow-wrap: anywhere; }
