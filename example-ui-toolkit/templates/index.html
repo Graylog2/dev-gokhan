@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Graylog Cloud tenants</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.1.1/css/pico.min.css"
+        integrity="sha384-L1dWfspMTHU/ApYnFiMz2QID/PlP1xCW9visvBdbEkOLkSSWsP6ZJWhPw6apiXxU"
+        crossorigin="anonymous">
+  <link rel="stylesheet" href="/static/app.css">
+  <link rel="stylesheet" href="/static/animations.css">
+  <script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js"
+          integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+          crossorigin="anonymous"></script>
+</head>
+<body hx-indicator="#progress">
+  <main class="container-fluid">
+    <p>Graylog Cloud · {{ environment }}</p>
+    <progress id="progress" class="htmx-indicator"></progress>
+
+    {% if error %}
+      <article role="alert">{{ error }}</article>
+    {% else %}
+      <p><small>{{ rows | length }} tenants · {{ source }}</small></p>
+      <div id="table" class="overflow-auto">
+        <table class="striped">
+          <thead>
+            <tr>
+              {% for title, url in headers %}
+                <th><a href="{{ url }}">{{ title }}</a></th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for t in rows %}
+              {# Click a row: the server sends drawer.html (or drawer_missing.html) and htmx puts it into #drawer. #}
+              <tr tabindex="0" style="--i: {{ loop.index0 }}"
+                  hx-get="/tenants/{{ t.tenant_name | urlencode }}" hx-target="#drawer"
+                  hx-trigger="click, keyup[key=='Enter']">
+                {% for col in columns %}
+                  <td data-label="{{ col | label }}">
+                    {%- if col in badges and t[col] -%}
+                      <span class="badge badge-{{ t[col] | badge_tone }}">{{ t[col] }}</span>
+                    {%- else -%}
+                      {{ t.get(col) | show }}
+                    {%- endif -%}
+                  </td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+
+    <div id="drawer"></div>
+  </main>
+</body>
+</html>

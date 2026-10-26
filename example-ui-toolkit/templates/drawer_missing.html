@@ -1,0 +1,18 @@
+{# Shown instead of the detail panel until drawer.html exists. htmx puts this into #drawer. Clicking the backdrop or OK empties #drawer again. #}
+<dialog open
+        hx-get="/drawer/close" hx-target="#drawer"
+        hx-trigger="click[target.tagName=='DIALOG']">
+  <article>
+    <header>
+      <button aria-label="Close" rel="prev"
+              hx-get="/drawer/close"
+              hx-trigger="click, keyup[key=='Escape'] from:body"></button>
+      <p><strong>The tenant drawer is missing, lets fix it together!</strong></p>
+    </header>
+    <p>Rename <code>templates/drawer.html.tpl</code> to <code>templates/drawer.html</code>
+       and restart the app. Then click any tenant again.</p>
+    <footer>
+      <button hx-get="/drawer/close">OK</button>
+    </footer>
+  </article>
+</dialog>

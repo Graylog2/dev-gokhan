@@ -4,6 +4,7 @@ import re
 
 from _lib.cmd import Cmd
 from _lib.converter import JsonConverter
+from _lib.converter import Base64Converter
 
 
 class Debuggy:
@@ -21,10 +22,9 @@ class Debuggy:
             "pods",
             "-n",
             f"{self.__ns}",
-            "-l"
-            "app=debuggy",
+            "-l" "app=debuggy",
             "-o",
-            "json"
+            "json",
         ]
         output = self.__cmd.run(cmd_str)
         if output["status"] == "success":
@@ -40,12 +40,7 @@ class Debuggy:
         with open("_manifests/debuggy.yaml", "r") as fp:
             debuggy_tpl = fp.read()
             debuggy_manifest = debuggy_tpl.replace("{NAMESPACE}", self.__ns)
-            cmd_str = [
-                "kubectl",
-                "apply",
-                "-f",
-                "-"
-            ]
+            cmd_str = ["kubectl", "apply", "-f", "-"]
             self.__cmd.run(cmd_str, input=debuggy_manifest.encode("UTF-8"))
             self.__set_name()
             cmd_str = [
@@ -65,12 +60,7 @@ class Debuggy:
         with open("_manifests/debuggy.yaml", "r") as fp:
             debuggy_tpl = fp.read()
             debuggy_manifest = debuggy_tpl.replace("{NAMESPACE}", self.__ns)
-            cmd_str = [
-                "kubectl",
-                "delete",
-                "-f",
-                "-"
-            ]
+            cmd_str = ["kubectl", "delete", "-f", "-"]
             self.__cmd.run(cmd_str, input=debuggy_manifest.encode("UTF-8"))
 
 
@@ -79,20 +69,15 @@ class K8S:
     def __init__(self):
         self.__cmd = Cmd()
         self.__json = JsonConverter()
+        self.__base64 = Base64Converter()
 
     def get_namespaces(self, filter=None):
-        cmd_str = [
-            "kubectl",
-            "get",
-            "ns",
-            "-o",
-            "json"
-        ]
+        cmd_str = ["kubectl", "get", "ns", "-o", "json"]
         response = self.__cmd.run(cmd_str)
         namespace_list = []
         if response["status"] == "success":
             raw_namespaces = response["stdout"]
-            if (namespaces_json := self.__json.decode(raw_namespaces)):
+            if namespaces_json := self.__json.decode(raw_namespaces):
                 for item in namespaces_json["items"]:
                     if filter is None:
                         namespace_list.append(item["metadata"]["name"])
@@ -100,6 +85,29 @@ class K8S:
                     if re.search(f"{filter}", item["metadata"]["name"]):
                         namespace_list.append(item["metadata"]["name"])
         return namespace_list
+
+    def get_secret(self, namespace, secret_name, key_name):
+        cmd_str = [
+            "kubectl",
+            "get",
+            "secret",
+            "-o",
+            "json",
+            "-n",
+            namespace,
+            secret_name,
+        ]
+        response = self.__cmd.run(cmd_str)
+        if response["status"] == "success":
+            try:
+                raw_json = response["stdout"]
+                secret_object = self.__json.decode(raw_json)
+                secret_str = self.__base64.decode(secret_object["data"][key_name])
+                return secret_str
+            except:
+                return None
+
+        return None
 
 
 class Pod:
@@ -119,7 +127,7 @@ class Pod:
             f"{self.__ns}",
             f"{self.__pod}",
             "--",
-            "env"
+            "env",
         ]
         output = self.__cmd.run(cmd_str)
         if output["status"] == "success":
@@ -139,7 +147,7 @@ class Pod:
             "-n",
             f"{self.__ns}",
             f"{self.__pod}",
-            "--"
+            "--",
         ]
         cmd_str = cmd_prefix + cmd
         try:
